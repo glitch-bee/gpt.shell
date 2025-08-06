@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT Shell</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        
+        body {
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pane.single {
+            flex: 1;
+        }
+        
+        .pane.split {
+            flex: 0 0 50%;
+        }
+        
+        .webview {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #1a1a1a;
+        }
+        
+        .divider {
+            width: 4px;
+            background: #333;
+            cursor: ew-resize;
+            display: none;
+            position: relative;
+        }
+        
+        .divider:hover {
+            background: #555;
+        }
+        
+        .divider.visible {
+            display: block;
+        }
+        
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2px;
+            height: 20px;
+            background: #666;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pane single" id="pane1">
+            <iframe id="iframe1" src="https://chat.openai.com" class="webview"></iframe>
+        </div>
+        
+        <div class="divider" id="divider"></div>
+        
+        <div class="pane hidden" id="pane2">
+            <iframe id="iframe2" src="about:blank" class="webview"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        let isSplitView = false;
+        let isDragging = false;
+        
+        const pane1 = document.getElementById('pane1');
+        const pane2 = document.getElementById('pane2');
+        const divider = document.getElementById('divider');
+        const iframe1 = document.getElementById('iframe1');
+        const iframe2 = document.getElementById('iframe2');
+        
+        // Toggle between single and split view
+        function toggleSplitView() {
+            isSplitView = !isSplitView;
+            
+            if (isSplitView) {
+                // Switch to split view
+                pane1.className = 'pane split';
+                pane2.className = 'pane split';
+                divider.className = 'divider visible';
+                
+                // Initialize second iframe if not already done
+                if (iframe2.src === 'about:blank') {
+                    iframe2.src = 'https://chat.openai.com';
+                }
+            } else {
+                // Switch to single view
+                pane1.className = 'pane single';
+                pane2.className = 'pane hidden';
+                divider.className = 'divider';
+            }
+        }
+        
+        // Handle divider dragging
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            document.body.style.cursor = 'ew-resize';
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging || !isSplitView) return;
+            
+            const containerWidth = document.querySelector('.container').offsetWidth;
+            const newLeftWidth = (e.clientX / containerWidth) * 100;
+            
+            // Constrain between 20% and 80%
+            if (newLeftWidth >= 20 && newLeftWidth <= 80) {
+                pane1.style.flex = `0 0 ${newLeftWidth}%`;
+                pane2.style.flex = `0 0 ${100 - newLeftWidth}%`;
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+        });
+        
+        // Listen for toggle split view message from main process
+        ipcRenderer.on('toggle-split-view', () => {
+            toggleSplitView();
+        });
+        
+        console.log('Split view initialized');
+    </script>
+</body>
+</html>

@@ -4,7 +4,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 window.addEventListener('DOMContentLoaded', () => {
   // Expose API to renderer process
   contextBridge.exposeInMainWorld('electronAPI', {
-    openExternal: (url) => ipcRenderer.invoke('open-external', url)
+    openExternal: (url) => ipcRenderer.invoke('open-external', url),
+    toggleAlwaysOnTop: () => ipcRenderer.invoke('toggle-always-on-top')
   });
   
   // Verify the API is available
