@@ -89,33 +89,55 @@ function createWindow(isSecondWindow = false) {
   win.webContents.setWindowOpenHandler(({ url }) => {
     console.log('New window requested for URL:', url);
     
-    // Check if it's an external link
-    if ((url.startsWith('http://') || url.startsWith('https://')) && 
-        !url.includes('chat.openai.com') && 
-        !url.includes('chatgpt.com') &&
-        !url.includes('openai.com')) {
-      console.log('Opening external URL in default browser:', url);
+    // DENY ALL new windows - open everything external in default browser
+    // Only allow same-origin/internal ChatGPT navigation within the same window
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.log('Opening ALL external URLs in default browser:', url);
       shell.openExternal(url);
-      return { action: 'deny' }; // Prevent opening in Electron
     }
     
-    // Allow internal navigation
-    return { action: 'allow' };
+    // ALWAYS deny new window creation - force everything to stay in one window or go to default browser
+    return { action: 'deny' };
   });
 
   // Handle navigation attempts
   win.webContents.on('will-navigate', (event, navigationUrl) => {
     console.log('Navigation attempt to:', navigationUrl);
     
-    // If it's an external link, open in default browser and prevent navigation
-    if ((navigationUrl.startsWith('http://') || navigationUrl.startsWith('https://')) && 
-        !navigationUrl.includes('chat.openai.com') && 
-        !navigationUrl.includes('chatgpt.com') &&
-        !navigationUrl.includes('openai.com') &&
-        navigationUrl !== 'https://chat.openai.com/') {
-      console.log('Preventing navigation, opening in default browser:', navigationUrl);
+    const currentUrl = win.webContents.getURL();
+    console.log('Current URL:', currentUrl);
+    
+    // Allow navigation within the same origin (ChatGPT internal navigation)
+    const isInternalNavigation = navigationUrl.includes('chat.openai.com') || 
+                                navigationUrl.includes('chatgpt.com') ||
+                                navigationUrl.includes('openai.com') ||
+                                navigationUrl === 'https://chat.openai.com/' ||
+                                navigationUrl.startsWith('https://chat.openai.com/') ||
+                                navigationUrl.startsWith('https://chatgpt.com/');
+    
+    if (!isInternalNavigation && (navigationUrl.startsWith('http://') || navigationUrl.startsWith('https://'))) {
+      console.log('Preventing external navigation, opening in default browser:', navigationUrl);
       event.preventDefault();
       shell.openExternal(navigationUrl);
+    }
+  });
+
+  // Additional safety net: catch any other new window attempts
+  win.webContents.on('new-window', (event, url) => {
+    console.log('Legacy new-window event fired for:', url);
+    event.preventDefault();
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      shell.openExternal(url);
+    }
+  });
+
+  // Catch iframe navigation attempts
+  win.webContents.on('did-create-window', (childWindow, details) => {
+    console.log('Child window creation attempted for:', details.url);
+    // Immediately close any child windows and open in default browser instead
+    childWindow.destroy();
+    if (details.url && (details.url.startsWith('http://') || details.url.startsWith('https://'))) {
+      shell.openExternal(details.url);
     }
   });
 
