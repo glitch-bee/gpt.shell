@@ -136,6 +136,8 @@ window.addEventListener('DOMContentLoaded', () => {
     subtree: true
   });
 
+  // (project scroll fix removed - unable to resolve)
+
   // NUCLEAR OPTION: Override window.open completely
   const originalOpen = window.open;
   window.open = function(url, target, features) {
@@ -228,4 +230,6 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
   }, true);
+
+  // Removed previous global scroll overrides to preserve sidebar's independent scroll
 });

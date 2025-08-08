@@ -1,4 +1,4 @@
-const { app, BrowserWindow, session, ipcMain, shell, Menu, globalShortcut } = require('electron');
+const { app, BrowserWindow, session, ipcMain, shell, Menu, globalShortcut, clipboard, Notification } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -92,8 +92,8 @@ function createWindow(isSecondWindow = false) {
     // DENY ALL new windows - open everything external in default browser
     // Only allow same-origin/internal ChatGPT navigation within the same window
     if (url.startsWith('http://') || url.startsWith('https://')) {
-      console.log('Opening ALL external URLs in default browser:', url);
-      shell.openExternal(url);
+  console.log('Opening ALL external URLs in default browser:', url);
+  openExternalSafe(url);
     }
     
     // ALWAYS deny new window creation - force everything to stay in one window or go to default browser
@@ -118,7 +118,7 @@ function createWindow(isSecondWindow = false) {
     if (!isInternalNavigation && (navigationUrl.startsWith('http://') || navigationUrl.startsWith('https://'))) {
       console.log('Preventing external navigation, opening in default browser:', navigationUrl);
       event.preventDefault();
-      shell.openExternal(navigationUrl);
+      openExternalSafe(navigationUrl);
     }
   });
 
@@ -127,7 +127,7 @@ function createWindow(isSecondWindow = false) {
     console.log('Legacy new-window event fired for:', url);
     event.preventDefault();
     if (url.startsWith('http://') || url.startsWith('https://')) {
-      shell.openExternal(url);
+  openExternalSafe(url);
     }
   });
 
@@ -137,7 +137,7 @@ function createWindow(isSecondWindow = false) {
     // Immediately close any child windows and open in default browser instead
     childWindow.destroy();
     if (details.url && (details.url.startsWith('http://') || details.url.startsWith('https://'))) {
-      shell.openExternal(details.url);
+  openExternalSafe(details.url);
     }
   });
 
@@ -168,6 +168,44 @@ function saveCurrentWindowState(win) {
       alwaysOnTop: win.isAlwaysOnTop()
     };
     saveWindowState(windowState);
+  }
+}
+
+// Normalize and safely open external URLs; fallback to clipboard + notification on failure
+function openExternalSafe(rawUrl) {
+  try {
+    let url = String(rawUrl || '').trim();
+    if (!url) return;
+
+    // If missing protocol but looks like a host/path, prefix https
+    if (!/^https?:\/\//i.test(url) && /[^\s]+\.[^\s]{2,}/.test(url)) {
+      url = 'https://' + url;
+    }
+
+    // Validate URL
+    try {
+      const u = new URL(url);
+      url = u.toString();
+    } catch {
+      // Not a valid URL; copy to clipboard and notify
+      clipboard.writeText(String(rawUrl));
+      new Notification({
+        title: 'Link looks invalid',
+        body: 'Copied to clipboard so you can paste it into your browser.'
+      }).show();
+      return;
+    }
+
+    shell.openExternal(url).catch((err) => {
+      console.error('openExternal failed:', err, 'for', url);
+      clipboard.writeText(url);
+      new Notification({
+        title: 'Couldn\'t open link',
+        body: 'Copied to clipboard. Paste in your browser.'
+      }).show();
+    });
+  } catch (err) {
+    console.error('openExternalSafe error for', rawUrl, err);
   }
 }
 
@@ -248,7 +286,7 @@ function createMenu() {
 // Handle IPC messages
 ipcMain.handle('open-external', (event, url) => {
   console.log('Main process: Opening external URL:', url);
-  shell.openExternal(url);
+  openExternalSafe(url);
 });
 
 ipcMain.handle('toggle-always-on-top', () => {
