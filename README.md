@@ -35,7 +35,7 @@ The application will open ChatGPT in a dedicated desktop window with enhanced ty
 
 ### Keyboard Shortcuts
 
-- **Ctrl+T**: Toggle always on top
+- **Ctrl+Shift+T**: Toggle always on top
 - **Ctrl+N**: Open new window (automatically positioned for dual-window setup)
 - **Ctrl+R**: Reload current window
 - **Ctrl+Shift+I**: Toggle Developer Tools
@@ -45,7 +45,7 @@ The application will open ChatGPT in a dedicated desktop window with enhanced ty
 
 - **Font Enhancement**: Uses JetBrains Mono font family for all text, improving code block readability
 - **External Link Handling**: ALL external links automatically open in your default browser instead of creating new Electron windows
-- **Always on Top**: Pin the window above all other applications with Ctrl+T or via the View menu
+- **Always on Top**: Pin the window above all other applications with Ctrl+Shift+T or via the View menu
 - **Window State Persistence**: Remembers window size, position, and always-on-top state between sessions
 - **Dual Window Support**: Open a second window (Ctrl+N) that automatically positions in a vertical split layout for cross-referencing
 - **Application Menu**: Native menu with keyboard shortcuts for common actions

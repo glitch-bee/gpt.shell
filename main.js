@@ -217,7 +217,7 @@ function createMenu() {
       submenu: [
         {
           label: 'Always on Top',
-          accelerator: 'CmdOrCtrl+T',
+          accelerator: 'CmdOrCtrl+Shift+T',
           type: 'checkbox',
           checked: windows.length > 0 ? windows[0].isAlwaysOnTop() : false,
           click: toggleAlwaysOnTop
@@ -267,7 +267,7 @@ app.whenReady().then(() => {
   createMenu();
   
   // Register global shortcuts
-  globalShortcut.register('CommandOrControl+T', () => {
+  globalShortcut.register('CommandOrControl+Shift+T', () => {
     toggleAlwaysOnTop();
     // Update menu checkbox
     createMenu();
