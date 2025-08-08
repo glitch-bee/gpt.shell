@@ -108,12 +108,9 @@ window.addEventListener('DOMContentLoaded', () => {
         event.stopPropagation();
         event.stopImmediatePropagation();
         
-        // Safety check for electronAPI
-        if (window.electronAPI && window.electronAPI.openExternal) {
-          window.electronAPI.openExternal(url);
-        } else {
-          console.error('electronAPI not available for:', url);
-        }
+        // Use IPC directly; don't rely on window.electronAPI
+        ipcRenderer.invoke('open-external', url)
+          .catch(err => console.error('ipc open-external failed:', err, 'url:', url));
         return false;
       }
     }
@@ -152,9 +149,8 @@ window.addEventListener('DOMContentLoaded', () => {
       
       if (!isInternalChatGPT) {
         console.log('BLOCKING window.open, redirecting to default browser:', url);
-        if (window.electronAPI && window.electronAPI.openExternal) {
-          window.electronAPI.openExternal(url);
-        }
+        ipcRenderer.invoke('open-external', url)
+          .catch(err => console.error('ipc open-external failed:', err, 'url:', url));
         return null; // Don't open anything in Electron
       }
     }
@@ -183,11 +179,10 @@ window.addEventListener('DOMContentLoaded', () => {
           !currentUrl.includes('chatgpt.com') &&
           !currentUrl.includes('openai.com')) {
         console.log('External navigation detected, opening in default browser:', currentUrl);
-        if (window.electronAPI && window.electronAPI.openExternal) {
-          window.electronAPI.openExternal(currentUrl);
-          // Navigate back to ChatGPT
-          window.location.href = 'https://chat.openai.com';
-        }
+        ipcRenderer.invoke('open-external', currentUrl)
+          .catch(err => console.error('ipc open-external failed:', err, 'url:', currentUrl));
+        // Navigate back to ChatGPT
+        window.location.href = 'https://chat.openai.com';
       }
     }
   };
@@ -207,9 +202,8 @@ window.addEventListener('DOMContentLoaded', () => {
       if (isExternal) {
         console.log('Blocking external form submission to:', form.action);
         event.preventDefault();
-        if (window.electronAPI && window.electronAPI.openExternal) {
-          window.electronAPI.openExternal(form.action);
-        }
+        ipcRenderer.invoke('open-external', form.action)
+          .catch(err => console.error('ipc open-external failed:', err, 'url:', form.action));
       }
     }
   }, true);
@@ -228,9 +222,8 @@ window.addEventListener('DOMContentLoaded', () => {
           console.log('Intercepting middle/right click on external link:', target.href);
           event.preventDefault();
           event.stopPropagation();
-          if (window.electronAPI && window.electronAPI.openExternal) {
-            window.electronAPI.openExternal(target.href);
-          }
+          ipcRenderer.invoke('open-external', target.href)
+            .catch(err => console.error('ipc open-external failed:', err, 'url:', target.href));
         }
       }
     }
