@@ -2,6 +2,29 @@ const { app, BrowserWindow, session, ipcMain, shell, Menu, globalShortcut, clipb
 const path = require('path');
 const fs = require('fs');
 
+// Force Electron to use Ozone platform with X11 and apply anti-blur hints on Linux
+app.commandLine.appendSwitch('enable-features', 'UseOzonePlatform');
+app.commandLine.appendSwitch('ozone-platform', 'x11');
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('ozone-platform-hint', 'x11');
+  app.commandLine.appendSwitch('high-dpi-support', '1');
+  app.commandLine.appendSwitch('force-device-scale-factor', '1');
+  app.commandLine.appendSwitch('use-gl', 'desktop');
+  // User-specified anti-blur and font rendering flags
+  app.commandLine.appendSwitch('enable-gpu-rasterization');
+  app.commandLine.appendSwitch('enable-zero-copy');
+  app.commandLine.appendSwitch('disable-font-subpixel-positioning', 'false');
+  app.commandLine.appendSwitch('enable-lcd-text-aa');
+  app.commandLine.appendSwitch('force-color-profile', 'srgb');
+  app.commandLine.appendSwitch('disable-smooth-scrolling');
+  app.commandLine.appendSwitch('disable-skia-runtime-opts');
+  // User-specified GPU and font flags for further testing
+  app.commandLine.appendSwitch('disable-gpu');
+  app.commandLine.appendSwitch('disable-gpu-compositing');
+  app.commandLine.appendSwitch('enable-font-antialiasing');
+  app.commandLine.appendSwitch('disable-lcd-text-aa', 'false');
+}
+
 // Configuration file path
 const configPath = path.join(__dirname, 'window-state.json');
 
@@ -81,6 +104,8 @@ function createWindow(isSecondWindow = false) {
 
   const win = new BrowserWindow(windowOptions);
   windows.push(win);
+
+
 
   // Load ChatGPT directly
   win.loadURL('https://chat.openai.com');
@@ -236,7 +261,6 @@ function createMenu() {
       submenu: [
         {
           label: 'New Window',
-          accelerator: 'CmdOrCtrl+N',
           click: () => {
             console.log('Creating second window...');
             createWindow(true);
@@ -260,7 +284,7 @@ function createMenu() {
           checked: windows.length > 0 ? windows[0].isAlwaysOnTop() : false,
           click: toggleAlwaysOnTop
         },
-        { type: 'separator' },
+  { type: 'separator' },
         {
           label: 'Reload',
           accelerator: 'CmdOrCtrl+R',
