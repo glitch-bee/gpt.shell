@@ -93,15 +93,7 @@ function createWindow(isSecondWindow = false) {
       width: Math.floor(firstBounds.width / 2),
       height: firstBounds.height
     });
-    
-    // Position second window to the right
-    windowOptions.x = firstBounds.x + Math.floor(firstBounds.width / 2);
-    windowOptions.y = firstBounds.y;
-  } else {
-    windowOptions.x = savedState.x;
-    windowOptions.y = savedState.y;
   }
-
   const win = new BrowserWindow(windowOptions);
   windows.push(win);
 
@@ -259,14 +251,7 @@ function createMenu() {
     {
       label: 'File',
       submenu: [
-        {
-          label: 'New Window',
-          click: () => {
-            console.log('Creating second window...');
-            createWindow(true);
-          }
-        },
-        { type: 'separator' },
+  // New Window option removed per request
         {
           label: 'Quit',
           accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
@@ -335,10 +320,7 @@ app.whenReady().then(() => {
     createMenu();
   });
   
-  globalShortcut.register('CommandOrControl+N', () => {
-    console.log('Global shortcut Ctrl+N pressed, creating second window...');
-    createWindow(true);
-  });
+  // Removed global Ctrl+N new window shortcut
 });
 
 app.on('window-all-closed', () => {

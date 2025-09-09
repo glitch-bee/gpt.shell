@@ -7,31 +7,9 @@ window.addEventListener('DOMContentLoaded', () => {
     openExternal: (url) => ipcRenderer.invoke('open-external', url),
     toggleAlwaysOnTop: () => ipcRenderer.invoke('toggle-always-on-top')
   });
-  
-  // Verify the API is available
-  console.log('electronAPI exposed:', window.electronAPI);
-  
-  // Inject JetBrains Mono font family
-  const style = document.createElement('style');
-  style.textContent = `
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-    
-    * {
-      font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace !important;
-    }
-    
-    /* Ensure code blocks and pre elements also use JetBrains Mono */
-    code, pre, .code, [class*="code"], [class*="highlight"] {
-      font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace !important;
-    }
-    
-    /* Apply to common text elements in ChatGPT interface */
-    div, p, span, textarea, input {
-      font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace !important;
-    }
-  `;
-  
-  document.head.appendChild(style);
+
+  // Using site default fonts now (JetBrains Mono injection removed)
+  console.log('electronAPI exposed (default fonts retained).');
 
   // AGGRESSIVE: Intercept ALL clicks that might navigate away
   document.addEventListener('click', (event) => {

@@ -31,14 +31,13 @@ npm start
 ## Shortcuts
 
 - Ctrl+Shift+T — Toggle Always on Top
-- Ctrl+N — Open a second window (auto side-by-side)
 - Ctrl+R — Reload
 - Ctrl+Shift+I — DevTools
 - Ctrl+Q — Quit
 
 ## What it does (and doesn’t)
 
-- Uses JetBrains Mono so code looks nice
+- Uses site default fonts
 - Remembers window size/position and Always-on-Top state
 - Has a simple menu and global shortcuts
 - Context isolation + sandboxing are on
