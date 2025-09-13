@@ -1,7 +1,8 @@
 {
-  "width": 1192,
-  "height": 800,
-  "x": 1368,
-  "y": 224,
-  "alwaysOnTop": false
+  "width": 1042,
+  "height": 1372,
+  "x": 1486,
+  "y": 60,
+  "alwaysOnTop": false,
+  "useNord": true
 }

@@ -1,0 +1,174 @@
+/* Precise fixes based on provided IDs */
+#page-header{
+  background:var(--nord1)!important;
+  color:var(--nord6)!important;
+  box-shadow:none!important;
+  border-bottom:1px solid var(--nord2)!important;
+}
+
+#thread-bottom-container{
+  background:transparent!important;
+  background-image:none!important;
+  -webkit-mask-image:none!important; mask-image:none!important;
+}
+:root{color-scheme:dark}
+/* Nord Palette */
+:root{
+  --nord0:#2E3440; /* Polar Night */
+  --nord1:#3B4252;
+  --nord2:#434C5E;
+  --nord3:#4C566A;
+  --nord4:#D8DEE9; /* Snow Storm */
+  --nord5:#E5E9F0;
+  --nord6:#ECEFF4;
+  --nord7:#8FBCBB; /* Frost */
+  --nord8:#88C0D0;
+  --nord9:#81A1C1;
+  --nord10:#5E81AC;
+  --nord11:#BF616A; /* Aurora */
+  --nord12:#D08770;
+  --nord13:#EBCB8B;
+  --nord14:#A3BE8C;
+  --nord15:#B48EAD;
+}
+html,body{
+  background-color:var(--nord0)!important;
+  color:var(--nord5)!important;
+}
+/* Sidebar containers (broad selectors to match ChatGPT left rail) */
+aside, nav, [class*="sidebar"], [class*="Side"], [data-testid*="sidebar"], [data-testId*="sidebar"]{
+  background-color:var(--nord0)!important;
+  color:var(--nord5)!important;
+  border-right:1px solid var(--nord2)!important;
+}
+/* Sidebar items */
+[role="navigation"] a, aside a, nav a,
+[class*="sidebar"] a, [class*="Sidebar"] a{
+  color:var(--nord5)!important;
+}
+[role="navigation"] a:hover, aside a:hover, nav a:hover,
+[class*="sidebar"] a:hover, [class*="Sidebar"] a:hover{
+  background-color:var(--nord1)!important;
+}
+/* Sidebar headers and section titles */
+[class*="sidebar"] h1,[class*="sidebar"] h2,[class*="sidebar"] h3,[class*="sidebar"] h4,
+[class*="Sidebar"] h1,[class*="Sidebar"] h2,[class*="Sidebar"] h3,[class*="Sidebar"] h4{
+  color:var(--nord6)!important;
+}
+/* Sidebar search/input in rail */
+aside input, nav input, [class*="sidebar"] input{
+  background:var(--nord1)!important;
+  color:var(--nord6)!important;
+  border:1px solid var(--nord3)!important;
+}
+/* Links */
+a{color:var(--nord8)!important}
+a:hover{color:var(--nord9)!important}
+/* Inputs */
+input,textarea,select{background:var(--nord1)!important;color:var(--nord6)!important;border:1px solid var(--nord3)!important}
+input::placeholder,textarea::placeholder{color:var(--nord4)!important}
+/* Buttons */
+button{background:var(--nord2)!important;color:var(--nord6)!important;border:1px solid var(--nord3)!important}
+button:hover{background:var(--nord3)!important}
+/* Code blocks */
+pre,code,.code,.hljs,[class*="code"],[class*="Code"],[class*="monospace"]{
+  background:var(--nord1)!important;color:var(--nord6)!important;border-color:var(--nord3)!important
+}
+/* Remove per-line highlight/background inside code blocks */
+pre *{background-color:transparent!important;box-shadow:none!important}
+pre [class*="highlight"], pre [data-highlight], pre [data-highlighted], pre mark,
+pre span[style*="background"], pre .line-highlight, pre .highlight-line{background:transparent!important}
+/* Code block header/toolbars (copy code etc) */
+[class*="code"] [class*="copy"], [class*="toolbar"], [data-testid*="copy-button"], [aria-label*="Copy"], [class*="ActionBar"], [class*="ToolBar"], [class*="controls"]{
+  background:var(--nord1)!important;
+  color:var(--nord6)!important;
+  box-shadow:none!important;
+}
+/* Clear edge artifacts around toolbar */
+[class*="toolbar"]::before,[class*="toolbar"]::after{background:transparent!important;content:none!important;box-shadow:none!important}
+[class*="ActionBar"]::before,[class*="ActionBar"]::after{background:transparent!important;content:none!important}
+/* Copy code button styling */
+button[aria-label*="Copy"], [data-testid*="copy-button"], [data-testid*="copy_button"], [class*="copy"] button{
+  background:var(--nord2)!important;
+  color:var(--nord6)!important;
+  border:1px solid var(--nord3)!important;
+  box-shadow:none!important;
+  outline:none!important;
+}
+button[aria-label*="Copy"]:hover, [data-testid*="copy-button"]:hover, [class*="copy"] button:hover{background:var(--nord3)!important}
+/* Tiny black chips near copy button */
+[class*="copy"]::before,[class*="copy"]::after{background:transparent!important}
+[class*="copy"] button{background:var(--nord2)!important;color:var(--nord6)!important;border-color:var(--nord3)!important}
+[class*="copy"] button:hover{background:var(--nord3)!important}
+/* Cards / panels */
+section,article,.card,[class*="panel"],[class*="Card"],[class*="container"],[class*="Container"]{
+  background:var(--nord1)!important;color:var(--nord5)!important;border-color:var(--nord3)!important
+}
+/* Top header/model selector region */
+[role="banner"], header, [class*="Header"], [class*="TopBar"], [data-testid*="header"], [class*="model"], [class*="selector"], [class*="Switcher"], [class*="Switch"]{
+  background:var(--nord1)!important;
+  color:var(--nord6)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+/* Remove dark ring around model selector combo/button */
+button[aria-haspopup="listbox"], [role="combobox"], [data-testid*="model"], [data-testid*="selector"]{
+  background:var(--nord2)!important;
+  border:1px solid var(--nord3)!important;
+  box-shadow:none!important;
+}
+/* Bottom gradient fade overlays */
+[class*="gradient"], [class*="Gradient"], [style*="linear-gradient"], [data-testid*="gradient"]{
+  background:transparent!important;
+  -webkit-mask-image:none!important; mask-image:none!important;
+}
+/* Dividers */
+hr{border-color:var(--nord3)!important}
+/* Blockquotes */
+blockquote{border-left:3px solid var(--nord10)!important;background:var(--nord1)!important}
+/* Tables */
+table{border-color:var(--nord3)!important}
+th,td{border-color:var(--nord3)!important}
+/* Scrollbars */
+*{scrollbar-color:var(--nord3) var(--nord1)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--nord1)}
+::-webkit-scrollbar-thumb{background:var(--nord3);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:var(--nord2)}
+
+/* --- Nord Polar polish add-on --- */
+
+/* Link + nav hover/active states */
+a:hover, nav a:hover, [role="navigation"] a:hover {
+  background-color: var(--nord2) !important;
+  color: var(--nord8) !important; /* Frost blue accent */
+}
+a:active, nav a:active, [role="navigation"] a:active {
+  background-color: var(--nord3) !important;
+  color: var(--nord9) !important;
+}
+
+/* Primary button (use class="primary" if supported) */
+button.primary,
+button[data-variant="primary"] {
+  background: var(--nord8) !important;
+  color: var(--nord0) !important;
+  border: 1px solid var(--nord9) !important;
+}
+button.primary:hover,
+button[data-variant="primary"]:hover {
+  background: var(--nord9) !important;
+  color: var(--nord0) !important;
+}
+
+/* Input placeholders: slightly stronger */
+input::placeholder,
+textarea::placeholder {
+  color: var(--nord5) !important;
+}
+
+/* Text selection highlight */
+::selection {
+  background: var(--nord8);
+  color: var(--nord0);
+}

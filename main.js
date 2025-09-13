@@ -47,7 +47,8 @@ function loadWindowState() {
     height: 800,
     x: undefined,
     y: undefined,
-    alwaysOnTop: false
+    alwaysOnTop: false,
+    useNord: false
   };
 }
 
@@ -96,11 +97,34 @@ function createWindow(isSecondWindow = false) {
   }
   const win = new BrowserWindow(windowOptions);
   windows.push(win);
+  // init theme flag for this window from saved state
+  win.__useNord = !!savedState.useNord;
 
 
 
   // Load ChatGPT directly
   win.loadURL('https://chat.openai.com');
+
+  // Inject Nord CSS if enabled
+  let nordCssKey = null;
+  const injectNord = async () => {
+    try {
+      const css = fs.readFileSync(path.join(__dirname, 'themes', 'nord-polar.css'), 'utf8');
+      nordCssKey = await win.webContents.insertCSS(css, { cssOrigin: 'author' });
+    } catch (e) {
+      console.log('Failed to inject Nord CSS:', e);
+    }
+  };
+  const removeNord = () => {
+    if (nordCssKey) {
+      try { win.webContents.removeInsertedCSS(nordCssKey); } catch {}
+      nordCssKey = null;
+    }
+  };
+
+  win.webContents.on('did-finish-load', () => {
+    if (savedState.useNord) injectNord();
+  });
 
   // Handle new window requests (like link clicks)
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -164,6 +188,10 @@ function createWindow(isSecondWindow = false) {
   
   // Remove window from array when closed
   win.on('closed', () => {
+    // attempt to cleanup injected CSS handle
+    if (win.__nordCssKey) {
+      try { win.webContents.removeInsertedCSS(win.__nordCssKey); } catch {}
+    }
     const index = windows.indexOf(win);
     if (index > -1) {
       windows.splice(index, 1);
@@ -182,7 +210,8 @@ function saveCurrentWindowState(win) {
       height: bounds.height,
       x: bounds.x,
       y: bounds.y,
-      alwaysOnTop: win.isAlwaysOnTop()
+      alwaysOnTop: win.isAlwaysOnTop(),
+      useNord: (() => { try { return win.__useNord === true; } catch { return false; } })()
     };
     saveWindowState(windowState);
   }
@@ -270,6 +299,33 @@ function createMenu() {
           click: toggleAlwaysOnTop
         },
   { type: 'separator' },
+        {
+          label: 'Nord Polar Theme',
+          type: 'checkbox',
+          checked: (() => { try { return windows[0]?.__useNord === true; } catch { return false; } })(),
+          click: () => {
+            const use = !(windows[0]?.__useNord === true);
+            windows.forEach(w => {
+              if (!w.isDestroyed()) {
+                w.__useNord = use;
+                if (use) {
+                  try {
+                    const css = fs.readFileSync(path.join(__dirname, 'themes', 'nord-polar.css'), 'utf8');
+                    w.webContents.insertCSS(css, { cssOrigin: 'author' }).then((key) => { w.__nordCssKey = key; }).catch(()=>{});
+                  } catch {}
+                } else if (w.__nordCssKey) {
+                  try { w.webContents.removeInsertedCSS(w.__nordCssKey); } catch {}
+                  w.__nordCssKey = null;
+                }
+              }
+            });
+            // Persist using first window's state
+            if (windows[0]) saveCurrentWindowState(windows[0]);
+            // Rebuild menu to reflect checkbox state
+            createMenu();
+          }
+        },
+        { type: 'separator' },
         {
           label: 'Reload',
           accelerator: 'CmdOrCtrl+R',
