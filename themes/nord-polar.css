@@ -172,3 +172,23 @@ textarea::placeholder {
   background: var(--nord8);
   color: var(--nord0);
 }
+
+/* Header/top bar normalization (removes dark bar + radius/shadow) */
+.bg-token-bg-primary,
+[class*="bg-token-bg-primary"] {
+  background-color: var(--nord1) !important;
+  box-shadow: none !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+/* Remove rounding if any utility adds it */
+.bg-token-bg-primary.rounded,
+[class*="bg-token-bg-primary"][class*="rounded"] {
+  border-radius: 0 !important;
+}
+/* Fallback: any sticky bar positioned at --header-height */
+.sticky[class*="top-\\[--header-height\\]"] {
+  background-color: var(--nord1) !important;
+  box-shadow: none !important;
+  border: none !important;
+}
